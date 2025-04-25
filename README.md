@@ -30,46 +30,37 @@ Todas receberão o **mesmo prompt padronizado** para garantir uniformidade na ge
 
 ### 🗃️ Dataset
 
-- Serão criados **commits em sistemas dummy simples**, com criações ou alterações claras, curtas e de fácil compreensão.
-- Para cada commit:
-    - De 1 a 2 humanos escreverão mensagens de commit.
-    - De 2 a 4 LLMs também gerarão mensagens.
-- Cada item do dataset conterá:
-    - O diff do commit (em código)
-    - De 4 a 6 mensagens de commit (sem identificação da origem)
-- Os sistemas serão construídos com critérios como:
-    - Serem pequenos e com escopo bem definido
-    - Utilizarem boas práticas e estilo comum de desenvolvimento
-    - Diversidade de tipos de alteração (bugfix, refactor, feature, etc.)
+Foi utilizado um dataset base de commits e suas mensagens, o [GitHub Commit Messages Dataset](https://www.kaggle.com/datasets/dhruvildave/github-commit-messages-dataset?resource=download)
+A partir daí foram feitas duas principais modificações:
+1. Redução de tamanho
+   - Para utilizar um dataset menor e ter um controle maior, serão utilizadas apenas as instâncias do [scikit-learn](https://github.com/scikit-learn/scikit-learn)
+2. Coleta do commit feito
+   - Tendo o repositório e o _commit hash_ foi coletado o commit rodando o comando `git show COMMIT_HASH`, então foram removidas as primeiras linhas que contém a mensagem escrita pelo autor do commit, para não influencia na resposta da LLM, e outras informações inúteis como data e código hash 
 
 ---
 
 ### ✍️ Exemplos preliminares de prompts
 
-Prompt de exemplo para alteração:
-> A seguir está uma alteração de código. Escreva uma mensagem de commit clara, concisa e seguindo boas práticas.
+Prompt de exemplo para as LLMs:
+> The lines below are a commit into the scikit-learn repo, write a commit message clear, concise and following good-practices. Write only the title, without description.
 >
-> Código antigo:
-> ```python
-> def soma(a, b):
->   return a+b
 > ```
-> Código novo:
-> ```python
-> def soma(a: int|float, b: int|float) -> float:
->   return float(a+b)
+> diff --git a/sklearn/manifold/tests/test_locally_linear.py b/sklearn/manifold/tests/test_locally_linear.py
+> index 9d06c27fe..c9ca2f0d7 100644
+> --- a/sklearn/manifold/tests/test_locally_linear.py
+> +++ b/sklearn/manifold/tests/test_locally_linear.py
+> @@ -36,7 +36,7 @@ def test_lle_simple_grid():
+> rng = np.random.RandomState(0)
+> # grid of equidistant points in 2D, out_dim = n_dim
+> X = np.array(list(product(range(5), repeat=2)))
+> -    X = X + 1e-10 * np.random.uniform(size=X.shape)
+> +    X = X + 1e-10 * rng.uniform(size=X.shape)
+>      out_dim = 2
+>      clf = manifold.LocallyLinearEmbedding(n_neighbors=5, out_dim=out_dim)
+>      tol = .1
 > ```
 
-Prompt de exemplo para criação:
-> A seguir está uma adição de código. Escreva uma mensagem de commit clara, concisa e seguindo boas práticas.
->
-> Código novo:
-> ```python
-> def soma(a, b):
->   return a+b
-> ```
-
-Exemplos em uso no ChatGPT: https://chatgpt.com/share/67f7b6cc-51b4-8005-af83-f478fcec1362
+Exemplos em uso no ChatGPT: https://chatgpt.com/c/680c11bf-ad8c-8005-96df-4e18585ed060
 
 ---
 
